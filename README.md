@@ -1,149 +1,139 @@
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-
--- Creating the main interface
-local ScreenGui = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame")
-
-ScreenGui.Parent = game.CoreGui
-
-Frame.Parent = ScreenGui
-Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Black background
-Frame.BackgroundTransparency = 0.5 -- Semi-transparent
-Frame.Position = UDim2.new(0.5, -200, 0.5, -120)
-Frame.Size = UDim2.new(0, 400, 0, 240)
-Frame.Visible = false
-
-TweenService:Create(Frame, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
-
--- Welcome message
-local WelcomeMessage = Instance.new("TextLabel")
-WelcomeMessage.Parent = ScreenGui
-WelcomeMessage.Text = "Welcome to Emilli Hub!"
-WelcomeMessage.Size = UDim2.new(0, 300, 0, 50)
-WelcomeMessage.Position = UDim2.new(0.5, -150, 0.5, -25)
-WelcomeMessage.BackgroundTransparency = 1
-WelcomeMessage.TextColor3 = Color3.fromRGB(255, 255, 255)
-WelcomeMessage.TextScaled = true
-
-task.spawn(function()
-    wait(5) -- The message stays for exactly 5 seconds
-    TweenService:Create(WelcomeMessage, TweenInfo.new(1), {TextTransparency = 1}):Play()
-    wait(1)
-    WelcomeMessage:Destroy()
-    Frame.Visible = true
-end)
-
--- Creating tab area
-local Tabs = Instance.new("Frame")
-Tabs.Parent = Frame
-Tabs.Size = UDim2.new(0, 100, 0, 200)
-Tabs.Position = UDim2.new(0, -120, 0, 10)
-
-local InitialMessage = Instance.new("TextLabel")
-InitialMessage.Parent = Frame
-InitialMessage.Text = "v1 Emilli Hub"
-InitialMessage.Size = UDim2.new(1, 0, 1, -50)
-InitialMessage.Position = UDim2.new(0, 0, 0, 50)
-InitialMessage.BackgroundTransparency = 1
-InitialMessage.TextColor3 = Color3.fromRGB(255, 255, 255)
-InitialMessage.TextScaled = true
-
--- Creating tabs
-local OthersTab = Instance.new("Frame")
-OthersTab.Parent = Frame
-OthersTab.Size = UDim2.new(1, 0, 1, -50)
-OthersTab.Position = UDim2.new(0, 0, 0, 50)
-OthersTab.Visible = false
-
-local TrollTab = Instance.new("Frame")
-TrollTab.Parent = Frame
-TrollTab.Size = UDim2.new(1, 0, 1, -50)
-TrollTab.Position = UDim2.new(0, 0, 0, 50)
-TrollTab.Visible = false
-
-local PlayerTab = Instance.new("Frame")
-PlayerTab.Parent = Frame
-PlayerTab.Size = UDim2.new(1, 0, 1, -50)
-PlayerTab.Position = UDim2.new(0, 0, 0, 50)
-PlayerTab.Visible = false
-
-local OthersVisible, TrollVisible, PlayerVisible = false, false, false
-
-local function ToggleTab(tab, visibilityFlag)
-    visibilityFlag = not visibilityFlag
-    tab.Visible = visibilityFlag
-    InitialMessage.Visible = not (OthersVisible or TrollVisible or PlayerVisible)
-    return visibilityFlag
+-- Funções Comuns
+local function getHumanoid(player)
+    local character = player.Character
+    if character then
+        return character:FindFirstChild("Humanoid")
+    end
+    return nil
 end
 
-local OthersButton = Instance.new("TextButton")
-OthersButton.Parent = Tabs
-OthersButton.Text = "Others"
-OthersButton.Size = UDim2.new(1, 0, 0.2, 0)
-OthersButton.MouseButton1Click:Connect(function()
-    OthersVisible = ToggleTab(OthersTab, OthersVisible)
-    TrollTab.Visible, PlayerTab.Visible = false, false
+local function createButton(text, position, onClick)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0, 280, 0, 40)
+    button.Position = position
+    button.Text = text
+    button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 18
+    button.Parent = mainFrame
+    button.MouseButton1Click:Connect(onClick)
+end
+
+-- Funções Admin Commands
+local function killPlayer(targetPlayer)
+    local humanoid = getHumanoid(targetPlayer)
+    if humanoid then
+        humanoid.Health = 0
+        print(targetPlayer.Name .. " foi morto!")
+    end
+end
+
+local function godMode()
+    local humanoid = getHumanoid(player)
+    if humanoid then
+        humanoid.MaxHealth = math.huge
+        humanoid.Health = humanoid.MaxHealth
+        print("Modo Deus ativado!")
+    end
+end
+
+-- Funções Teleportação
+local function teleportToPlayer(targetPlayer)
+    local targetCharacter = targetPlayer.Character
+    if targetCharacter then
+        player.Character.HumanoidRootPart.CFrame = targetCharacter.HumanoidRootPart.CFrame
+        print("Teleportado para " .. targetPlayer.Name)
+    end
+end
+
+local function teleportToPosition(position)
+    player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
+    print("Teleportado para a posição " .. tostring(position))
+end
+
+-- Funções Avançadas
+local function setSpeed(speed)
+    local character = player.Character
+    if character then
+        local humanoid = character:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = speed
+            print("Velocidade ajustada para " .. speed)
+        end
+    end
+end
+
+local function noClip()
+    local character = player.Character
+    if character then
+        local humanoid = character:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid.PlatformStand = true  -- Ativa NoClip
+            print("NoClip ativado!")
+        end
+    end
+end
+
+local function disableNoClip()
+    local character = player.Character
+    if character then
+        local humanoid = character:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid.PlatformStand = false  -- Desativa NoClip
+            print("NoClip desativado!")
+        end
+    end
+end
+
+-- Função Anti-Ban (Esqueleto, necessita de implementação específica)
+local function antiBan()
+    -- Aqui seria implementado o anti-ban conforme as suas necessidades.
+    print("Anti-Ban ativado!")
+end
+
+-- Função para organizar os botões por categorias
+local function createCategoryButtons()
+    -- Categoria de Admin Commands
+    createButton("Kill Player", UDim2.new(0, 10, 0, 60), function() killPlayer(player) end)
+    createButton("God Mode", UDim2.new(0, 10, 0, 110), godMode)
+    
+    -- Categoria de Teleportação
+    createButton("Teleport to Player", UDim2.new(0, 10, 0, 160), function() teleportToPlayer(player) end)
+    createButton("Teleport to Position", UDim2.new(0, 10, 0, 210), function() teleportToPosition(Vector3.new(0, 0, 0)) end)  -- Exemplo de posição
+
+    -- Categoria de Funções Avançadas
+    createButton("Set Speed", UDim2.new(0, 10, 0, 260), function() setSpeed(50) end)  -- Exemplo de speed
+    createButton("NoClip", UDim2.new(0, 10, 0, 310), noClip)
+    createButton("Disable NoClip", UDim2.new(0, 10, 0, 360), disableNoClip)
+
+    -- Categoria Anti-Ban e Outras
+    createButton("Anti-Ban", UDim2.new(0, 10, 0, 410), antiBan)
+end
+
+-- Criando o botão de fechar
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 280, 0, 40)
+closeButton.Position = UDim2.new(0, 10, 0, 460)
+closeButton.Text = "Fechar"
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 18
+closeButton.Parent = mainFrame
+
+closeButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+    print("Hub fechado!")
 end)
 
-local TrollButton = Instance.new("TextButton")
-TrollButton.Parent = Tabs
-TrollButton.Text = "Troll"
-TrollButton.Size = UDim2.new(1, 0, 0.2, 0)
-TrollButton.MouseButton1Click:Connect(function()
-    TrollVisible = ToggleTab(TrollTab, TrollVisible)
-    OthersTab.Visible, PlayerTab.Visible = false, false
-end)
+-- Criação da interface
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 300, 0, 400)  -- Ajuste do tamanho da interface
+mainFrame.Position = UDim2.new(0, 0, 0, 0)  -- Posição da interface
+mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Fundo preto
+mainFrame.Visible = true
+mainFrame.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
-local PlayerButton = Instance.new("TextButton")
-PlayerButton.Parent = Tabs
-PlayerButton.Text = "Player"
-PlayerButton.Size = UDim2.new(1, 0, 0.2, 0)
-PlayerButton.MouseButton1Click:Connect(function()
-    PlayerVisible = ToggleTab(PlayerTab, PlayerVisible)
-    OthersTab.Visible, TrollTab.Visible = false, false
-end)
-
--- Adding input bars
-local PlayerNameBox = Instance.new("TextBox")
-PlayerNameBox.Parent = TrollTab
-PlayerNameBox.PlaceholderText = "Enter player name"
-PlayerNameBox.Size = UDim2.new(0.8, 0, 0.2, 0)
-PlayerNameBox.Position = UDim2.new(0.1, 0, 0.05, 0)
-
-local FlySpeedBox = Instance.new("TextBox")
-FlySpeedBox.Parent = OthersTab
-FlySpeedBox.PlaceholderText = "Fly speed"
-FlySpeedBox.Size = UDim2.new(0.8, 0, 0.2, 0)
-FlySpeedBox.Position = UDim2.new(0.1, 0, 0.05, 0)
-
--- Minimized mode system
-local MinimizedFrame = Instance.new("TextButton")
-MinimizedFrame.Parent = ScreenGui
-MinimizedFrame.Text = "Open"
-MinimizedFrame.Size = UDim2.new(0, 50, 0, 50)
-MinimizedFrame.Position = UDim2.new(0.5, -25, 0.5, -25)
-MinimizedFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
-MinimizedFrame.Visible = false
-
-MinimizedFrame.MouseButton1Click:Connect(function()
-    Frame.Visible = true
-    MinimizedFrame.Visible = false
-end)
-
-local MinimizeButton = Instance.new("TextButton")
-MinimizeButton.Parent = Tabs
-MinimizeButton.Text = "-"
-MinimizeButton.Size = UDim2.new(1, 0, 0.2, 0)
-MinimizeButton.MouseButton1Click:Connect(function()
-    Frame.Visible = false
-    MinimizedFrame.Visible = true
-end)
-
-local CloseButton = Instance.new("TextButton")
-CloseButton.Parent = Tabs
-CloseButton.Text = "X"
-CloseButton.Size = UDim2.new(1, 0, 0.2, 0)
-CloseButton.MouseButton1Click:Connect(function()
-    Frame:Destroy()
-end)
+-- Chamar a função para criar os botões
+createCategoryButtons()
