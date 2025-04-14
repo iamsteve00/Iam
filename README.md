@@ -1,41 +1,64 @@
 
--- Creating the Main Interface
+-- Creating the main interface
 local ScreenGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
+local MinimizedFrame = Instance.new("Frame") -- Small movable square when minimized
 
 ScreenGui.Name = "CustomScript"
 ScreenGui.Parent = game.CoreGui
 
 Frame.Name = "MainFrame"
 Frame.Parent = ScreenGui
-Frame.BackgroundColor3 = Color3.fromRGB(255, 182, 193) -- Theme color
+Frame.BackgroundColor3 = Color3.fromRGB(255, 182, 193)
 Frame.Position = UDim2.new(0.5, -150, 0.5, -100)
 Frame.Size = UDim2.new(0, 300, 0, 200)
 
--- Function to display a global message to the server
-local function broadcastMessage(messageText, duration)
-    for _, player in ipairs(game.Players:GetPlayers()) do
-        local playerGui = player:FindFirstChildOfClass("PlayerGui")
-        if playerGui then
-            local messageLabel = Instance.new("TextLabel")
-            messageLabel.Parent = playerGui
-            messageLabel.Text = messageText
-            messageLabel.Size = UDim2.new(0, 400, 0, 50)
-            messageLabel.Position = UDim2.new(0.5, -200, 0.05, 0)
-            messageLabel.BackgroundTransparency = 0.5
-            messageLabel.TextScaled = true
-            messageLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+-- Close button
+local CloseButton = Instance.new("TextButton")
+CloseButton.Parent = Frame
+CloseButton.Text = "X"
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -35, 1, -35)
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 
-            task.delay(duration, function()
-                messageLabel:Destroy()
-            end)
-        end
-    end
-end
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
 
-broadcastMessage("🚀 Slime X Emili", 5)
+-- Minimized Square
+MinimizedFrame.Name = "MinimizedFrame"
+MinimizedFrame.Parent = ScreenGui
+MinimizedFrame.BackgroundColor3 = Color3.fromRGB(255, 182, 193)
+MinimizedFrame.Size = UDim2.new(0, 50, 0, 50)
+MinimizedFrame.Position = UDim2.new(0.5, -25, 0.5, -25)
+MinimizedFrame.Visible = false
 
--- Creating Tabs
+-- Function to minimize and restore the interface
+local minimized = false
+
+MinimizedFrame.MouseButton1Click:Connect(function()
+    minimized = false
+    MinimizedFrame.Visible = false
+    Frame.Visible = true
+    TrollFrame.Visible = false
+    PlayerFrame.Visible = false
+    OthersFrame.Visible = false
+end)
+
+local MinimizeButton = Instance.new("TextButton")
+MinimizeButton.Parent = Frame
+MinimizeButton.Text = "-"
+MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
+MinimizeButton.Position = UDim2.new(1, -70, 1, -35)
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
+
+MinimizeButton.MouseButton1Click:Connect(function()
+    minimized = true
+    Frame.Visible = false
+    MinimizedFrame.Visible = true
+end)
+
+-- Creating tabs
 local function createTabButton(name, text, position)
     local tabButton = Instance.new("TextButton")
     tabButton.Name = name
@@ -50,112 +73,88 @@ local TrollTab = createTabButton("TrollTab", "Troll", UDim2.new(0, 10, 0, 10))
 local PlayerTab = createTabButton("PlayerTab", "Player", UDim2.new(0, 100, 0, 10))
 local OthersTab = createTabButton("OthersTab", "Others", UDim2.new(0, 190, 0, 10))
 
--- Creating Specific Tab Frames
-local function createTabFrame()
-    local tabFrame = Instance.new("Frame")
-    tabFrame.Parent = ScreenGui
-    tabFrame.Size = UDim2.new(0, 300, 0, 250)
-    tabFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
-    tabFrame.Visible = false
-    return tabFrame
-end
-
-local TrollFrame = createTabFrame()
-local OthersFrame = createTabFrame()
-local PlayerFrame = createTabFrame()
-
--- Show the tab when clicked
+-- Ensuring only one tab is visible at a time
 TrollTab.MouseButton1Click:Connect(function()
     Frame.Visible = false
     TrollFrame.Visible = true
-end)
-
-OthersTab.MouseButton1Click:Connect(function()
-    Frame.Visible = false
-    OthersFrame.Visible = true
+    PlayerFrame.Visible = false
+    OthersFrame.Visible = false
 end)
 
 PlayerTab.MouseButton1Click:Connect(function()
     Frame.Visible = false
+    TrollFrame.Visible = false
     PlayerFrame.Visible = true
+    OthersFrame.Visible = false
 end)
 
--- Creating Player List in the Troll Tab
-local PlayerListButton = Instance.new("TextButton")
-PlayerListButton.Parent = TrollFrame
-PlayerListButton.Text = "Show Player List"
-PlayerListButton.Size = UDim2.new(0, 150, 0, 40)
-PlayerListButton.Position = UDim2.new(0.5, -75, 0.1, 0)
-
-local function updatePlayerList()
-    -- Code to list players
-end
-
-PlayerListButton.MouseButton1Click:Connect(function()
-    updatePlayerList()
+OthersTab.MouseButton1Click:Connect(function()
+    Frame.Visible = false
+    TrollFrame.Visible = false
+    PlayerFrame.Visible = false
+    OthersFrame.Visible = true
+    FlyGui.Enabled = true -- Activating Fly GUI when opening the Others tab
 end)
 
--- Creating Fly Option in Others Tab
-local FlyButton = Instance.new("TextButton")
-FlyButton.Parent = OthersFrame
-FlyButton.Text = "Fly (Toggle)"
-FlyButton.Size = UDim2.new(0, 150, 0, 40)
-FlyButton.Position = UDim2.new(0.5, -75, 0.7, 0)
+-- Creating player selection box before Void and View Player
+local PlayerNameBox = Instance.new("TextBox")
+PlayerNameBox.Parent = TrollFrame
+PlayerNameBox.PlaceholderText = "Enter Player Name"
+PlayerNameBox.Size = UDim2.new(0, 150, 0, 30)
+PlayerNameBox.Position = UDim2.new(0, 10, 0, 10)
+PlayerNameBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+PlayerNameBox.TextScaled = true
 
-local isFlying = false
-local flySpeed = 50
+-- Void Player functionality
+local voidActive = false
+local VoidButton = Instance.new("TextButton")
+VoidButton.Parent = TrollFrame
+VoidButton.Text = "Void Player (ON/OFF)"
+VoidButton.Size = UDim2.new(0, 150, 0, 30)
+VoidButton.Position = UDim2.new(0, 10, 0, 50)
 
-local function toggleFly(player)
-    local humanoidRootPart = player.Character.HumanoidRootPart
-    if isFlying then
-        isFlying = false
+VoidButton.MouseButton1Click:Connect(function()
+    local playerName = PlayerNameBox.Text
+    if playerName == "" then return end
+
+    local targetPlayer = game.Players:FindFirstChild(playerName)
+
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        voidActive = not voidActive
+        VoidButton.Text = voidActive and "Void Player (ON)" or "Void Player (OFF)"
+
+        if voidActive then
+            targetPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, -500, 0) -- Sends player to void
+        end
     else
-        isFlying = true
-        game:GetService("RunService").Heartbeat:Connect(function()
-            humanoidRootPart.Velocity = Vector3.new(0, flySpeed, 0)
-        end)
-    end
-end
-
-FlyButton.MouseButton1Click:Connect(function()
-    toggleFly(game.Players.LocalPlayer)
-end)
-
--- Creating Teleport Button in Player Tab
-local TeleportButton = Instance.new("TextButton")
-TeleportButton.Parent = PlayerFrame
-TeleportButton.Text = "Teleport"
-TeleportButton.Size = UDim2.new(0, 150, 0, 40)
-TeleportButton.Position = UDim2.new(0.5, -75, 0.2, 0)
-
-TeleportButton.MouseButton1Click:Connect(function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 10, 0)
-end)
-
--- Creating Speed Adjustment Button
-local SpeedButton = Instance.new("TextButton")
-SpeedButton.Parent = PlayerFrame
-SpeedButton.Text = "Change Speed"
-SpeedButton.Size = UDim2.new(0, 150, 0, 40)
-SpeedButton.Position = UDim2.new(0.5, -75, 0.35, 0)
-
-SpeedButton.MouseButton1Click:Connect(function()
-    local humanoid = game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
-    if humanoid then
-        humanoid.WalkSpeed = humanoid.WalkSpeed + 10
+        print("Player not found.")
     end
 end)
 
--- Creating Jump Adjustment Button
-local JumpButton = Instance.new("TextButton")
-JumpButton.Parent = PlayerFrame
-JumpButton.Text = "Change Jump"
-JumpButton.Size = UDim2.new(0, 150, 0, 40)
-JumpButton.Position = UDim2.new(0.5, -75, 0.5, 0)
+-- View Player functionality
+local viewing = false
+local ViewButton = Instance.new("TextButton")
+ViewButton.Parent = TrollFrame
+ViewButton.Text = "View Player (ON/OFF)"
+ViewButton.Size = UDim2.new(0, 150, 0, 30)
+ViewButton.Position = UDim2.new(0, 10, 0, 90)
 
-JumpButton.MouseButton1Click:Connect(function()
-    local humanoid = game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
-    if humanoid then
-        humanoid.JumpPower = humanoid.JumpPower + 10
+ViewButton.MouseButton1Click:Connect(function()
+    local playerName = PlayerNameBox.Text
+    if playerName == "" then return end
+
+    local targetPlayer = game.Players:FindFirstChild(playerName)
+
+    if targetPlayer and targetPlayer.Character then
+        viewing = not viewing
+        ViewButton.Text = viewing and "View Player (ON)" or "View Player (OFF)"
+
+        if viewing then
+            game.Workspace.CurrentCamera.CameraSubject = targetPlayer.Character:FindFirstChild("Humanoid")
+        else
+            game.Workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
+        end
+    else
+        print("Player not found.")
     end
-end)# Iam
+end)
