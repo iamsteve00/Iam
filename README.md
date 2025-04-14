@@ -1,139 +1,68 @@
--- Funções Comuns
-local function getHumanoid(player)
-    local character = player.Character
-    if character then
-        return character:FindFirstChild("Humanoid")
-    end
-    return nil
+-- Garantir que estamos dentro do jogo
+if not game:IsLoaded() then
+    game.Loaded:Wait()
 end
 
-local function createButton(text, position, onClick)
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(0, 280, 0, 40)
-    button.Position = position
-    button.Text = text
-    button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.Font = Enum.Font.GothamBold
-    button.TextSize = 18
-    button.Parent = mainFrame
-    button.MouseButton1Click:Connect(onClick)
+-- Variáveis
+local player = game.Players.LocalPlayer
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "EmilliHub"
+
+-- Frame principal
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 300, 0, 400)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = gui
+
+-- Título
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+title.Text = "Emilli Hub"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.Parent = mainFrame
+
+-- Exemplo de botão
+local function createButton(text, yPos, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -20, 0, 40)
+    btn.Position = UDim2.new(0, 10, 0, yPos)
+    btn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 16
+    btn.Text = text
+    btn.Parent = mainFrame
+    btn.MouseButton1Click:Connect(callback)
 end
 
--- Funções Admin Commands
-local function killPlayer(targetPlayer)
-    local humanoid = getHumanoid(targetPlayer)
-    if humanoid then
-        humanoid.Health = 0
-        print(targetPlayer.Name .. " foi morto!")
-    end
-end
-
-local function godMode()
-    local humanoid = getHumanoid(player)
-    if humanoid then
-        humanoid.MaxHealth = math.huge
-        humanoid.Health = humanoid.MaxHealth
-        print("Modo Deus ativado!")
-    end
-end
-
--- Funções Teleportação
-local function teleportToPlayer(targetPlayer)
-    local targetCharacter = targetPlayer.Character
-    if targetCharacter then
-        player.Character.HumanoidRootPart.CFrame = targetCharacter.HumanoidRootPart.CFrame
-        print("Teleportado para " .. targetPlayer.Name)
-    end
-end
-
-local function teleportToPosition(position)
-    player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
-    print("Teleportado para a posição " .. tostring(position))
-end
-
--- Funções Avançadas
-local function setSpeed(speed)
-    local character = player.Character
-    if character then
-        local humanoid = character:FindFirstChild("Humanoid")
-        if humanoid then
-            humanoid.WalkSpeed = speed
-            print("Velocidade ajustada para " .. speed)
-        end
-    end
-end
-
-local function noClip()
-    local character = player.Character
-    if character then
-        local humanoid = character:FindFirstChild("Humanoid")
-        if humanoid then
-            humanoid.PlatformStand = true  -- Ativa NoClip
-            print("NoClip ativado!")
-        end
-    end
-end
-
-local function disableNoClip()
-    local character = player.Character
-    if character then
-        local humanoid = character:FindFirstChild("Humanoid")
-        if humanoid then
-            humanoid.PlatformStand = false  -- Desativa NoClip
-            print("NoClip desativado!")
-        end
-    end
-end
-
--- Função Anti-Ban (Esqueleto, necessita de implementação específica)
-local function antiBan()
-    -- Aqui seria implementado o anti-ban conforme as suas necessidades.
-    print("Anti-Ban ativado!")
-end
-
--- Função para organizar os botões por categorias
-local function createCategoryButtons()
-    -- Categoria de Admin Commands
-    createButton("Kill Player", UDim2.new(0, 10, 0, 60), function() killPlayer(player) end)
-    createButton("God Mode", UDim2.new(0, 10, 0, 110), godMode)
-    
-    -- Categoria de Teleportação
-    createButton("Teleport to Player", UDim2.new(0, 10, 0, 160), function() teleportToPlayer(player) end)
-    createButton("Teleport to Position", UDim2.new(0, 10, 0, 210), function() teleportToPosition(Vector3.new(0, 0, 0)) end)  -- Exemplo de posição
-
-    -- Categoria de Funções Avançadas
-    createButton("Set Speed", UDim2.new(0, 10, 0, 260), function() setSpeed(50) end)  -- Exemplo de speed
-    createButton("NoClip", UDim2.new(0, 10, 0, 310), noClip)
-    createButton("Disable NoClip", UDim2.new(0, 10, 0, 360), disableNoClip)
-
-    -- Categoria Anti-Ban e Outras
-    createButton("Anti-Ban", UDim2.new(0, 10, 0, 410), antiBan)
-end
-
--- Criando o botão de fechar
-local closeButton = Instance.new("TextButton")
-closeButton.Size = UDim2.new(0, 280, 0, 40)
-closeButton.Position = UDim2.new(0, 10, 0, 460)
-closeButton.Text = "Fechar"
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.Font = Enum.Font.GothamBold
-closeButton.TextSize = 18
-closeButton.Parent = mainFrame
-
-closeButton.MouseButton1Click:Connect(function()
-    mainFrame.Visible = false
-    print("Hub fechado!")
+-- Botões de exemplo
+createButton("Fly GUI", 60, function()
+    print("Fly GUI ativado")
 end)
 
--- Criação da interface
-local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 300, 0, 400)  -- Ajuste do tamanho da interface
-mainFrame.Position = UDim2.new(0, 0, 0, 0)  -- Posição da interface
-mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Fundo preto
-mainFrame.Visible = true
-mainFrame.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+createButton("Kill Player", 110, function()
+    print("Kill Player ativado")
+end)
 
--- Chamar a função para criar os botões
-createCategoryButtons()
+createButton("Speed", 160, function()
+    print("Speed ativado")
+end)
+
+createButton("Admin Commands", 210, function()
+    print("Admin Commands ativado")
+end)
+
+createButton("Teleport", 260, function()
+    print("Teleport ativado")
+end)
+
+-- Botão de fechar
+createButton("Fechar Hub", 310, function()
+    gui:Destroy()
+end)
