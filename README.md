@@ -2,10 +2,9 @@
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
--- Creating the main interface
+-- Criando a interface principal
 local ScreenGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
-local MinimizedFrame = Instance.new("Frame") -- Square when minimized
 
 ScreenGui.Name = "CustomScript"
 ScreenGui.Parent = game.CoreGui
@@ -13,125 +12,159 @@ ScreenGui.Parent = game.CoreGui
 Frame.Name = "MainFrame"
 Frame.Parent = ScreenGui
 Frame.BackgroundColor3 = Color3.fromRGB(255, 182, 193)
-Frame.Position = UDim2.new(0.5, -150, 0.5, -100)
-Frame.Size = UDim2.new(0, 300, 0, 200)
-Frame.BackgroundTransparency = 1 -- Start invisible
+Frame.Position = UDim2.new(0.5, -300, 0.5, -200) -- Ajustado para 2x maior
+Frame.Size = UDim2.new(0, 600, 0, 400) -- Interface maior
+Frame.BackgroundTransparency = 1 -- Começa invisível
 
--- Fade-in animation when opening the interface
+-- Animação de fade-in ao abrir a interface
 local FadeInTween = TweenService:Create(Frame, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0})
 FadeInTween:Play()
 
--- Creating the welcome message
-local WelcomeText = Instance.new("TextLabel")
-WelcomeText.Parent = ScreenGui
-WelcomeText.Text = "Welcome to Emilli Hub"
-WelcomeText.Size = UDim2.new(0, 250, 0, 40)
-WelcomeText.Position = UDim2.new(0.5, -125, 0.3, 0)
-WelcomeText.BackgroundTransparency = 1
-WelcomeText.TextScaled = true
-WelcomeText.TextColor3 = Color3.fromRGB(255, 255, 255)
-WelcomeText.Font = Enum.Font.SourceSansBold
-WelcomeText.TextTransparency = 1 -- Start invisible
+-- Criando a área das abas
+local Tabs = Instance.new("Frame")
+Tabs.Parent = Frame
+Tabs.Size = UDim2.new(1, 0, 0, 50)
+Tabs.Position = UDim2.new(0, 0, 0, -50)
+Tabs.BackgroundColor3 = Color3.fromRGB(255, 150, 150)
 
--- Fade-in and scale animation for the welcome message
-local WelcomeTween = TweenService:Create(WelcomeText, TweenInfo.new(1.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {TextTransparency = 0, Size = UDim2.new(0, 320, 0, 55)})
-FadeInTween.Completed:Connect(function()
-    task.wait(0.5) -- Short delay before showing the message
-    WelcomeTween:Play()
+-- Criando as abas
+local OthersTab = Instance.new("Frame")
+OthersTab.Parent = Frame
+OthersTab.Size = UDim2.new(1, 0, 1, -50)
+OthersTab.Position = UDim2.new(0, 0, 0, 50)
+OthersTab.BackgroundColor3 = Color3.fromRGB(100, 100, 255)
+
+local TrollTab = Instance.new("Frame")
+TrollTab.Parent = Frame
+TrollTab.Size = UDim2.new(1, 0, 1, -50)
+TrollTab.Position = UDim2.new(0, 0, 0, 50)
+TrollTab.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+TrollTab.Visible = false
+
+local PlayerTab = Instance.new("Frame")
+PlayerTab.Parent = Frame
+PlayerTab.Size = UDim2.new(1, 0, 1, -50)
+PlayerTab.Position = UDim2.new(0, 0, 0, 50)
+PlayerTab.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
+PlayerTab.Visible = false
+
+-- Criando botões para alternar entre abas
+local OthersButton = Instance.new("TextButton")
+OthersButton.Parent = Tabs
+OthersButton.Text = "Others"
+OthersButton.Size = UDim2.new(0.3, 0, 1, 0)
+OthersButton.BackgroundColor3 = Color3.fromRGB(100, 100, 255)
+OthersButton.MouseButton1Click:Connect(function()
+    OthersTab.Visible = true
+    TrollTab.Visible = false
+    PlayerTab.Visible = false
 end)
 
--- Message disappears after a few seconds
-task.wait(4)
-local FadeOut = TweenService:Create(WelcomeText, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 1})
-FadeOut:Play()
-
-FadeOut.Completed:Connect(function()
-    WelcomeText:Destroy()
+local TrollButton = Instance.new("TextButton")
+TrollButton.Parent = Tabs
+TrollButton.Text = "Troll"
+TrollButton.Size = UDim2.new(0.3, 0, 1, 0)
+TrollButton.Position = UDim2.new(0.3, 0, 0, 0)
+TrollButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+TrollButton.MouseButton1Click:Connect(function()
+    OthersTab.Visible = false
+    TrollTab.Visible = true
+    PlayerTab.Visible = false
 end)
 
--- Close button
-local CloseButton = Instance.new("TextButton")
-CloseButton.Parent = Frame
-CloseButton.Text = "X"
-CloseButton.Size = UDim2.new(0, 30, 0, 30)
-CloseButton.Position = UDim2.new(1, -35, 1, -35)
-CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-
-CloseButton.MouseButton1Click:Connect(function()
-    ScreenGui:Destroy()
+local PlayerButton = Instance.new("TextButton")
+PlayerButton.Parent = Tabs
+PlayerButton.Text = "Player"
+PlayerButton.Size = UDim2.new(0.3, 0, 1, 0)
+PlayerButton.Position = UDim2.new(0.6, 0, 0, 0)
+PlayerButton.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
+PlayerButton.MouseButton1Click:Connect(function()
+    OthersTab.Visible = false
+    TrollTab.Visible = false
+    PlayerTab.Visible = true
 end)
 
--- Creating the minimized square
-MinimizedFrame.Name = "MinimizedFrame"
-MinimizedFrame.Parent = ScreenGui
-MinimizedFrame.BackgroundColor3 = Color3.fromRGB(255, 182, 193)
-MinimizedFrame.Size = UDim2.new(0, 50, 0, 50)
-MinimizedFrame.Position = UDim2.new(0.5, -25, 0.5, -25)
-MinimizedFrame.Visible = false
+-- Adicionando funcionalidades dentro das abas
+-- Aba "Others" - Fly GUI
+local FlyButton = Instance.new("TextButton")
+FlyButton.Parent = OthersTab
+FlyButton.Text = "Activate Fly"
+FlyButton.Size = UDim2.new(0.5, 0, 0.2, 0)
+FlyButton.Position = UDim2.new(0.25, 0, 0.1, 0)
+FlyButton.BackgroundColor3 = Color3.fromRGB(50, 150, 255)
 
--- Minimize button
-local MinimizeButton = Instance.new("TextButton")
-MinimizeButton.Parent = Frame
-MinimizeButton.Text = "-"
-MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
-MinimizeButton.Position = UDim2.new(1, -70, 1, -35)
-MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
+local flying = false
+FlyButton.MouseButton1Click:Connect(function()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
 
-MinimizeButton.MouseButton1Click:Connect(function()
-    Frame.Visible = false
-    MinimizedFrame.Visible = true
+    if flying then
+        character.HumanoidRootPart.Anchored = false
+        FlyButton.Text = "Activate Fly"
+    else
+        character.HumanoidRootPart.Anchored = true
+        FlyButton.Text = "Deactivate Fly"
+    end
+
+    flying = not flying
 end)
 
--- Restore button inside the minimized square
-local RestoreButton = Instance.new("TextButton")
-RestoreButton.Parent = MinimizedFrame
-RestoreButton.Text = "🔄"
-RestoreButton.Size = UDim2.new(1, 0, 1, 0)
-RestoreButton.BackgroundTransparency = 1
+-- Aba "Troll" - Void Player e View Player
+local VoidButton = Instance.new("TextButton")
+VoidButton.Parent = TrollTab
+VoidButton.Text = "Void Player"
+VoidButton.Size = UDim2.new(0.5, 0, 0.2, 0)
+VoidButton.Position = UDim2.new(0.25, 0, 0.1, 0)
+VoidButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
 
-RestoreButton.MouseButton1Click:Connect(function()
-    MinimizedFrame.Visible = false
-    Frame.Visible = true
-    Frame.BackgroundTransparency = 1
-    FadeInTween:Play()
+VoidButton.MouseButton1Click:Connect(function()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+
+    character.HumanoidRootPart.CFrame = CFrame.new(0, -500, 0) -- Envia o jogador para o void
 end)
 
--- Making the minimized square draggable
-local dragging = false
-local dragInput, dragStart, startPos
+local ViewButton = Instance.new("TextButton")
+ViewButton.Parent = TrollTab
+ViewButton.Text = "View Player"
+ViewButton.Size = UDim2.new(0.5, 0, 0.2, 0)
+ViewButton.Position = UDim2.new(0.25, 0, 0.35, 0)
+ViewButton.BackgroundColor3 = Color3.fromRGB(50, 255, 50)
 
-MinimizedFrame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = MinimizedFrame.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
+ViewButton.MouseButton1Click:Connect(function()
+    local player = game.Players.LocalPlayer
+    local targetPlayer = game.Players:GetPlayers()[math.random(#game.Players:GetPlayers())] -- Escolhe um jogador aleatório
+
+    if targetPlayer and targetPlayer.Character then
+        game.Workspace.CurrentCamera.CameraSubject = targetPlayer.Character.Humanoid -- Alterna a câmera para o alvo
     end
 end)
 
-MinimizedFrame.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        dragInput = input
-    end
+-- Aba "Player" - Boost Speed e Jump
+local SpeedButton = Instance.new("TextButton")
+SpeedButton.Parent = PlayerTab
+SpeedButton.Text = "Boost Speed"
+SpeedButton.Size = UDim2.new(0.5, 0, 0.2, 0)
+SpeedButton.Position = UDim2.new(0.25, 0, 0.1, 0)
+SpeedButton.BackgroundColor3 = Color3.fromRGB(50, 255, 50)
+
+SpeedButton.MouseButton1Click:Connect(function()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+
+    character.Humanoid.WalkSpeed = 50 -- Aumenta a velocidade do jogador
 end)
 
-UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = input.Position - dragStart
-        local newX = math.clamp(startPos.X.Offset + delta.X, 0, game:GetService("Workspace").CurrentCamera.ViewportSize.X - MinimizedFrame.Size.X.Offset)
-        local newY = math.clamp(startPos.Y.Offset + delta.Y, 0, game:GetService("Workspace").CurrentCamera.ViewportSize.Y - MinimizedFrame.Size.Y.Offset)
-        
-        MinimizedFrame.Position = UDim2.new(startPos.X.Scale, newX, startPos.Y.Scale, newY)
-    end
-end)
+local JumpButton = Instance.new("TextButton")
+JumpButton.Parent = PlayerTab
+JumpButton.Text = "Boost Jump"
+JumpButton.Size = UDim2.new(0.5, 0, 0.2, 0)
+JumpButton.Position = UDim2.new(0.25, 0, 0.35, 0)
+JumpButton.BackgroundColor3 = Color3.fromRGB(255, 255, 50)
 
--- Adding a glowing effect to the minimized square
-local GlowTween = TweenService:Create(MinimizedFrame, TweenInfo.new(1, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(255, 150, 150)})
+JumpButton.MouseButton1Click:Connect(function()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
 
-MinimizeButton.MouseButton1Click:Connect(function()
-    GlowTween:Play()
+    character.Humanoid.JumpPower = 100 -- Aumenta a altura do salto
 end)
