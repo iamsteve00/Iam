@@ -1,174 +1,81 @@
--- Espera o jogo carregar
-if not game:IsLoaded() then game.Loaded:Wait() end
+-- Emilli Hub - Estilo Chaos Hub com funções dos 4 hubs (Chaos, SanderX, Rael, Cartola) -- Tema: Preto, Branco e Vermelho | Layout: Abas Horizontais no Topo
 
-local CoreGui = game:GetService("CoreGui")
-if CoreGui:FindFirstChild("EmilliHub") then CoreGui.EmilliHub:Destroy() end
+local EmilliHub = Instance.new("ScreenGui") EmilliHub.Name = "EmilliHub" EmilliHub.ResetOnSpawn = false EmilliHub.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
-local gui = Instance.new("ScreenGui")
-gui.Name = "EmilliHub"
-gui.ResetOnSpawn = false
-gui.IgnoreGuiInset = true
-gui.Parent = CoreGui
+local MainFrame = Instance.new("Frame") MainFrame.Name = "MainFrame" MainFrame.Size = UDim2.new(0, 350, 0, 420) MainFrame.Position = UDim2.new(0.5, -175, 0.5, -210) MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) MainFrame.BorderSizePixel = 0 MainFrame.Parent = EmilliHub
 
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 400)
-frame.Position = UDim2.new(0.5, -150, 0.5, -200)
-frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-frame.BorderSizePixel = 0
-frame.Parent = gui
+local UICorner = Instance.new("UICorner") UICorner.CornerRadius = UDim.new(0, 8) UICorner.Parent = MainFrame
 
-local frameCorner = Instance.new("UICorner", frame)
-frameCorner.CornerRadius = UDim.new(0, 6)
+local Title = Instance.new("TextLabel") Title.Size = UDim2.new(1, 0, 0, 40) Title.BackgroundTransparency = 1 Title.Text = "Emilli Hub" Title.TextColor3 = Color3.fromRGB(255, 0, 0) Title.Font = Enum.Font.GothamBold Title.TextSize = 24 Title.Parent = MainFrame
 
--- Título
-local titleBar = Instance.new("Frame")
-titleBar.Size = UDim2.new(1, 0, 0, 40)
-titleBar.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-titleBar.BorderSizePixel = 0
-titleBar.Parent = frame
+local TabsFrame = Instance.new("Frame") TabsFrame.Size = UDim2.new(1, 0, 0, 30) TabsFrame.Position = UDim2.new(0, 0, 0, 40) TabsFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30) TabsFrame.BorderSizePixel = 0 TabsFrame.Parent = MainFrame
 
-local titleCorner = Instance.new("UICorner", titleBar)
-titleCorner.CornerRadius = UDim.new(0, 6)
+local TabButtons = {} local Pages = {}
 
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -40, 1, 0)
-title.Position = UDim2.new(0, 10, 0, 0)
-title.BackgroundTransparency = 1
-title.Text = "Emilli Hub"
-title.TextColor3 = Color3.new(1, 1, 1)
-title.Font = Enum.Font.GothamBold
-title.TextSize = 18
-title.TextXAlignment = Enum.TextXAlignment.Left
-title.Parent = titleBar
+local function createTab(name) local tabButton = Instance.new("TextButton") tabButton.Size = UDim2.new(0, 70, 1, 0) tabButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40) tabButton.TextColor3 = Color3.fromRGB(255, 255, 255) tabButton.Font = Enum.Font.Gotham tabButton.TextSize = 14 tabButton.Text = name tabButton.Parent = TabsFrame
 
--- Botão de fechar
-local close = Instance.new("TextButton")
-close.Size = UDim2.new(0, 30, 0, 30)
-close.Position = UDim2.new(1, -35, 0, 5)
-close.BackgroundColor3 = Color3.fromRGB(255, 70, 70)
-close.Text = "X"
-close.TextColor3 = Color3.new(1, 1, 1)
-close.Font = Enum.Font.GothamBold
-close.TextSize = 14
-close.Parent = titleBar
+local page = Instance.new("Frame")
+page.Size = UDim2.new(1, 0, 1, -70)
+page.Position = UDim2.new(0, 0, 0, 70)
+page.BackgroundTransparency = 1
+page.Visible = false
+page.Parent = MainFrame
 
-local closeCorner = Instance.new("UICorner", close)
-closeCorner.CornerRadius = UDim.new(1, 0)
+TabButtons[#TabButtons + 1] = tabButton
+Pages[#Pages + 1] = page
 
-close.MouseButton1Click:Connect(function()
-	gui:Destroy()
+tabButton.MouseButton1Click:Connect(function()
+    for i = 1, #Pages do
+        Pages[i].Visible = false
+        TabButtons[i].BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    end
+    page.Visible = true
+    tabButton.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
 end)
 
--- Menu lateral de categorias
-local categoryMenu = Instance.new("Frame")
-categoryMenu.Size = UDim2.new(0, 80, 1, -40)
-categoryMenu.Position = UDim2.new(0, 0, 0, 40)
-categoryMenu.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-categoryMenu.BorderSizePixel = 0
-categoryMenu.Parent = frame
+return page
 
-local menuCorner = Instance.new("UICorner", categoryMenu)
-menuCorner.CornerRadius = UDim.new(0, 6)
-
--- Área de conteúdo
-local content = Instance.new("Frame")
-content.Size = UDim2.new(1, -80, 1, -40)
-content.Position = UDim2.new(0, 80, 0, 40)
-content.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-content.BorderSizePixel = 0
-content.Parent = frame
-
-local contentCorner = Instance.new("UICorner", content)
-contentCorner.CornerRadius = UDim.new(0, 6)
-
-local pages = {}
-
-local function createPage(name)
-	local page = Instance.new("ScrollingFrame")
-	page.Size = UDim2.new(1, 0, 1, 0)
-	page.CanvasSize = UDim2.new(0, 0, 0, 0)
-	page.BackgroundTransparency = 1
-	page.ScrollBarThickness = 5
-	page.Visible = false
-	page.Parent = content
-	pages[name] = page
-	return page
 end
 
-local function switchPage(name)
-	for i, page in pairs(pages) do
-		page.Visible = (i == name)
-	end
+local function createButton(parent, name, callback) local button = Instance.new("TextButton") button.Size = UDim2.new(1, -20, 0, 30) button.Position = UDim2.new(0, 10, 0, #parent:GetChildren() * 35) button.Text = name button.TextColor3 = Color3.fromRGB(255, 255, 255) button.BackgroundColor3 = Color3.fromRGB(45, 45, 45) button.BorderSizePixel = 0 button.Font = Enum.Font.Gotham button.TextSize = 14 button.Parent = parent button.MouseButton1Click:Connect(callback)
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 4)
+corner.Parent = button
+
 end
 
-local function createCategory(name)
-	local btn = Instance.new("TextButton")
-	btn.Size = UDim2.new(1, 0, 0, 30)
-	btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-	btn.Text = name
-	btn.TextColor3 = Color3.new(1, 1, 1)
-	btn.Font = Enum.Font.Gotham
-	btn.TextSize = 14
-	btn.Parent = categoryMenu
+-- Criando abas local tabNames = {"Movimento", "Jogadores", "Mapa", "Visual", "Diversão", "Extras"} local pagesByName = {}
 
-	local btnCorner = Instance.new("UICorner", btn)
-	btnCorner.CornerRadius = UDim.new(0, 6)
+for _, name in pairs(tabNames) do pagesByName[name] = createTab(name) end
 
-	local page = createPage(name)
+-- MOVIMENTO createButton(pagesByName["Movimento"], "Fly", function() loadstring(game:HttpGet("https://pastebin.com/raw/5V9VwZ59"))() end)
 
-	btn.MouseButton1Click:Connect(function()
-		switchPage(name)
-	end)
+createButton(pagesByName["Movimento"], "Speed", function() local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid") if humanoid then humanoid.WalkSpeed = 100 end end)
 
-	return page
-end
+createButton(pagesByName["Movimento"], "Super Jump", function() local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid") if humanoid then humanoid.JumpPower = 200 end end)
 
--- Categorias
-local flyPage = createCategory("Fly")
-local playerPage = createCategory("Player")
-local visualPage = createCategory("Visual")
-local teleportPage = createCategory("TP")
-local miscPage = createCategory("Outros")
+createButton(pagesByName["Movimento"], "No Clip", function() loadstring(game:HttpGet("https://pastebin.com/raw/FsJak1qR"))() end)
 
--- Exibir primeira categoria
-switchPage("Fly")
+createButton(pagesByName["Movimento"], "Andar na Água", function() game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Anchored = false end)
 
--- Exemplo de botão em uma página
-local function createOption(page, name, callback)
-	local btn = Instance.new("TextButton")
-	btn.Size = UDim2.new(1, -10, 0, 30)
-	btn.Position = UDim2.new(0, 5, 0, #page:GetChildren() * 35)
-	btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-	btn.Text = name
-	btn.TextColor3 = Color3.new(1, 1, 1)
-	btn.Font = Enum.Font.Gotham
-	btn.TextSize = 14
-	btn.Parent = page
-	page.CanvasSize = UDim2.new(0, 0, 0, #page:GetChildren() * 35)
+-- JOGADORES local playerInput = Instance.new("TextBox") playerInput.Size = UDim2.new(1, -20, 0, 30) playerInput.Position = UDim2.new(0, 10, 0, 5) playerInput.PlaceholderText = "Nome do Jogador" playerInput.Text = "" playerInput.TextColor3 = Color3.fromRGB(255, 255, 255) playerInput.BackgroundColor3 = Color3.fromRGB(45, 45, 45) playerInput.Font = Enum.Font.Gotham playerInput.TextSize = 14 playerInput.Parent = pagesByName["Jogadores"]
 
-	local btnCorner = Instance.new("UICorner", btn)
-	btnCorner.CornerRadius = UDim.new(0, 6)
+createButton(pagesByName["Jogadores"], "Kill Player", function() local targetName = playerInput.Text local target = game.Workspace:FindFirstChild(targetName) if target and target:FindFirstChild("Humanoid") then target.Humanoid.Health = 0 end end)
 
-	btn.MouseButton1Click:Connect(callback)
-end
+createButton(pagesByName["Jogadores"], "Teleportar até Player", function() local targetName = playerInput.Text local target = game.Workspace:FindFirstChild(targetName) if target then game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = target:FindFirstChild("HumanoidRootPart").CFrame end end)
 
--- Adiciona opções de exemplo
-createOption(flyPage, "Ativar Fly", function()
-	print("Fly ligado")
-end)
+-- MAPA createButton(pagesByName["Mapa"], "Remover Portas", function() for _, obj in pairs(workspace:GetDescendants()) do if obj:IsA("Part") and obj.Name:lower():find("door") then obj:Destroy() end end end)
 
-createOption(playerPage, "Kill Player", function()
-	print("Kill ativado")
-end)
+createButton(pagesByName["Mapa"], "Destravar Todas Casas", function() for _, house in pairs(workspace:GetChildren()) do if house:FindFirstChild("Lock") then house.Lock:Destroy() end end end)
 
-createOption(visualPage, "ESP Players", function()
-	print("ESP ligado")
-end)
+createButton(pagesByName["Mapa"], "Iluminar o Mapa", function() game.Lighting.Brightness = 5 game.Lighting.ClockTime = 12 end)
 
-createOption(teleportPage, "Ir para Hospital", function()
-	print("Teleport para Hospital")
-end)
+createButton(pagesByName["Mapa"], "Teleporte para Spawn", function() game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(0, 10, 0)) end)
 
-createOption(miscPage, "Speed x2", function()
-	print("Speed 2x")
-end)
+-- Mostrar primeira aba por padrão Pages[1].Visible = true TabButtons[1].BackgroundColor3 = Color3.fromRGB(100, 0, 0)
+
+-- Botão de fechar local CloseButton = Instance.new("TextButton") CloseButton.Text = "X" CloseButton.Size = UDim2.new(0, 30, 0, 30) CloseButton.Position = UDim2.new(1, -35, 0, 5) CloseButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0) CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255) CloseButton.Font = Enum.Font.GothamBold CloseButton.TextSize = 18 CloseButton.Parent = MainFrame CloseButton.MouseButton1Click:Connect(function() EmilliHub:Destroy() end)
+
+print("Emilli Hub v2 carregado com visual Chaos + funções dos 4 hubs!")
+
